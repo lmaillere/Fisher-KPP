@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "Readme.html",
+    "href": "Readme.html",
+    "title": "Readme",
+    "section": "",
+    "text": "Readme\nThis repository provides a quarto html page to simulate the Fisher KPP equation with Julia, using the package MethodOfLines.jl.\n\n\n\n\n\n\nReusehttps://creativecommons.org/licenses/by-nc/4.0/"
+  },
+  {
+    "objectID": "FisherKPP.html",
+    "href": "FisherKPP.html",
+    "title": "Fisher KPP with Julia",
+    "section": "",
+    "text": "Fisher KPP with Julia\n\n\n\n\n\n\nReusehttps://creativecommons.org/licenses/by-nc/4.0/"
+  }
+]

@@ -1,0 +1,7 @@
+---
+title: "About"
+---
+
+This pages have been generated with [Quarto](https://quarto.org/), [Jupyter](https://jupyter.org) and [Julia](https://www.https://julialang.org/) (version 1.9). 
+
+Main used packages are [MethodOfLines.jl](https://docs.sciml.ai/MethodOfLines/stable/), [ModellingToolkit.jl](https://docs.sciml.ai/ModelingToolkit/stable/), [OrdinaryDiffEq.jl](https://docs.sciml.ai/OrdinaryDiffEq/stable/)  and [Plots.jl](https://docs.juliaplots.org/stable/).
