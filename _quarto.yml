@@ -1,0 +1,38 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Fisher KPP with Julia"
+  sidebar:
+    style: floating
+    contents:
+      - index.qmd
+      - pop_isolees.qmd
+      - pop_exploitees.qmd
+      - pop_interactions.qmd
+      - about.qmd
+  page-footer: "Copyright 2023, Ludovic Mailleret"
+  repo-url: https://github.com/lmaillere/Fisher-KPP
+  repo-actions: [edit, issue]
+  
+highlight-style: pygments
+
+reference-location: margin
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-fold: false
+    code-tools: true
+    html-math-method: katex
+
+license: CC BY-NC 
+
+bibliography: references.bib
+
+jupyter: julia-1.9
+
+execute:
+ cache: true
