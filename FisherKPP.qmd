@@ -1,6 +1,6 @@
 # Fisher KPP with Julia
 
-This implementation of numerical solve of reaction diffusion equation is based on the [presentation](https://www.youtube.com/watch?v=8gLhaWRYvfQ) of the package `MethodOfLines.jl` at JuliaCon 2022 by A. Jones.
+This implementation of numerical solve of a reaction diffusion equation is based on the [presentation](https://www.youtube.com/watch?v=8gLhaWRYvfQ) of the package `MethodOfLines.jl` at JuliaCon 2022 by A. Jones.
 
 ## Fisher KPP equation
 
@@ -14,15 +14,20 @@ with $u(t,x)$ the population density at time $t$ and position $x$ (scaled to the
 
 ## Packages
 
-Let us first import the parameters used for the simulation
+Let us first import the packages used for the simulation:
 
 ```{julia}
-using MethodOfLines, ModelingToolkit, DomainSets, OrdinaryDiffEq, Plots
+using MethodOfLines, 
+      ModelingToolkit,
+      DomainSets, 
+      OrdinaryDiffEq, 
+      Plots, 
+      LaTeXStrings
 ```
 
 ## Model definition
 
-`MethodsOfLines.jl` makes use of `ModelllingToolkit.jl` to symbolically define the model to integrate. 
+`MethodsOfLines.jl` makes use of `ModelingToolkit.jl` to symbolically define the model to integrate. 
 
 Let us first define the time and space parameters:
 
@@ -86,7 +91,7 @@ We define the model to be integrated as a `PDESystem`, from the equation `eq`, t
 @named sys = PDESystem(eq, ic_bc, domain, [t, x], [u(t,x)])
 ```
 
-We set up the discretization of the state space, through `MethodOfLines.jl`:
+We set up the discretization of space, through `MethodOfLines.jl`:
 
 ```{julia}
 dx = 0.1
@@ -118,7 +123,11 @@ And we plot the animation of the solution through time:
 ```{julia}
 #| output: true
 anim = @animate for i in eachindex(gridt)
-    plot(gridx, solu[i, :], label = "u(x,t)", title = "t=$(gridt[i])")
+    plot(gridx, solu[i, :],
+         xlabel = "position "*L"$x$",
+         ylabel = "population density "*L"$u$", 
+         label = L"$u(x,t)$", 
+         title = "t=$(gridt[i])")
 end
 
 gif(anim, "fisherKPP.gif", fps = 10)
