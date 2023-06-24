@@ -1,0 +1,8 @@
+{
+    "jupyter.kernels.filter": [
+        {
+            "path": "/home/ludo/.local/share/jupyter/kernels/julia-1.8/kernel.json",
+            "type": "jupyterKernelspec"
+        }
+    ]
+}

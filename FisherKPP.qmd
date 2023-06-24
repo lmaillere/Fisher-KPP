@@ -1,2 +1,131 @@
 # Fisher KPP with Julia
 
+This implementation of numerical solve of reaction diffusion equation is based on the [presentation](https://www.youtube.com/watch?v=8gLhaWRYvfQ) of the package `MethodOfLines.jl` at JuliaCon 2022 by A. Jones.
+
+## Fisher KPP equation
+
+The Fisher KPP equation (Fisher's version) reads:
+
+$$
+\frac{\partial u}{\partial t} = ru\left(1-u\right) + D \frac{\partial^2 u}{\partial x^2},
+$$
+
+with $u(t,x)$ the population density at time $t$ and position $x$ (scaled to the local carrying capacity $K$), $r$ the intrinsic growth rate of the population, and $D$ the diffusion coefficient.
+
+## Packages
+
+Let us first import the parameters used for the simulation
+
+```{julia}
+using MethodOfLines, ModelingToolkit, DomainSets, OrdinaryDiffEq, Plots
+```
+
+## Model definition
+
+`MethodsOfLines.jl` makes use of `ModelllingToolkit.jl` to symbolically define the model to integrate. 
+
+Let us first define the time and space parameters:
+
+```{julia}
+@parameters t, x
+```
+
+Now the variable $u(t,x)$:
+
+```{julia}
+@variables u(..)
+```
+
+And finally the derivatives:
+
+```{julia}
+Dt = Differential(t)
+Dx = Differential(x)
+Dxx = Differential(x)^2
+```
+
+We also define the parameters $r$ and $D$ as global variables (not the best design, can be improved).
+
+```{julia}
+r = 1.0
+D = 1.0
+```
+
+We can now define the model symbolically through:
+```{julia}
+#| output: true
+eq = Dt(u(t, x)) ~ r * u(t,x) * (1-u(t,x)) + D * Dxx(u(t,x))
+```
+
+## Domains of integration
+
+Let us introduce some parameters for space and time domains:
+```{julia}
+x_max = 30.0
+t_max = 14.0
+```
+
+And the domains of integration:
+```{julia}
+domain = [x ∈ Interval(0.0, x_max),
+          t ∈ Interval(0.0, t_max)]
+```
+
+We also introduce (initial and) boundary conditions:
+```{julia}
+ic_bc = [u(0.0, x) ~ 0.0,
+         u(t, 0.0) ~ 1.0,
+         u(t, x_max) ~ 0.0]
+```
+
+## Simulation
+
+We define the model to be integrated as a `PDESystem`, from the equation `eq`, the initial and boundary conditions `ic_bc`, the domains of integration `domain`, the time and space parameters `t` and `x`, and the solution we want to retrieve `u(t,x)`:
+
+```{julia}
+@named sys = PDESystem(eq, ic_bc, domain, [t, x], [u(t,x)])
+```
+
+We set up the discretization of the state space, through `MethodOfLines.jl`:
+
+```{julia}
+dx = 0.1
+discretization = MOLFiniteDifference([x => dx], t)
+```
+
+And we set up the (ODE) problem to be integrated:
+```{julia}
+prob = discretize(sys, discretization)
+```
+
+And we finally integrate it through the `OrdinaryDiffEq.jl` solver with `Tsit5` algorithm.
+
+```{julia}
+sol = solve(prob, Tsit5(), saveat = .1)
+```
+
+## Graphical representation
+
+We retrieve the components of the solution for easier manipulation:
+
+```{julia}
+gridx = sol[x]
+gridt = sol[t]
+solu = sol[u(t,x)]
+```
+
+And we plot the animation of the solution through time:
+```{julia}
+#| output: true
+anim = @animate for i in eachindex(gridt)
+    plot(gridx, solu[i, :], label = "u(x,t)", title = "t=$(gridt[i])")
+end
+
+gif(anim, "fisherKPP.gif", fps = 10)
+```
+
+And that's it !
+
+
+
+

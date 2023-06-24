@@ -33,3 +33,4 @@ jupyter: julia-1.9
 
 execute:
  cache: true
+ output: false
