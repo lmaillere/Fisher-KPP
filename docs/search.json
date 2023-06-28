@@ -68,5 +68,54 @@
     "title": "Fisher KPP with Julia",
     "section": "Graphical representation",
     "text": "Graphical representation\nWe retrieve the components of the solution for easier manipulation:\n\ngridx = sol[x]\ngridt = sol[t]\nsolu = sol[u(t,x)]\n\nAnd we plot the animation of the solution through time:\n\nanim = @animate for i in eachindex(gridt)\n    plot(gridx, solu[i, :],\n         xlabel = \"position \"*L\"$x$\",\n         ylabel = \"population density \"*L\"$u$\", \n         label = L\"$u(x,t)$\", \n         title = \"t=$(gridt[i])\")\nend\n\ngif(anim, \"fisherKPP.gif\", fps = 10)\n\n\n\n\nAnd that’s it !"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Fisher KPP with Julia",
+    "section": "",
+    "text": "This implementation of numerical solve of a reaction diffusion equation is based on the presentation of the package MethodOfLines.jl at JuliaCon 2022 by A. Jones."
+  },
+  {
+    "objectID": "index.html#fisher-kpp-equation",
+    "href": "index.html#fisher-kpp-equation",
+    "title": "Fisher KPP with Julia",
+    "section": "Fisher KPP equation",
+    "text": "Fisher KPP equation\nThe Fisher KPP equation (Fisher’s version) reads:\n\n\\frac{\\partial u}{\\partial t} = ru\\left(1-u\\right) + D \\frac{\\partial^2 u}{\\partial x^2},\n\nwith u(t,x) the population density at time t and position x (scaled to the local carrying capacity K), r the intrinsic growth rate of the population, and D the diffusion coefficient."
+  },
+  {
+    "objectID": "index.html#packages",
+    "href": "index.html#packages",
+    "title": "Fisher KPP with Julia",
+    "section": "Packages",
+    "text": "Packages\nLet us first import the packages used for the simulation:\n\nusing MethodOfLines, \n      ModelingToolkit,\n      DomainSets, \n      OrdinaryDiffEq, \n      Plots, \n      LaTeXStrings"
+  },
+  {
+    "objectID": "index.html#model-definition",
+    "href": "index.html#model-definition",
+    "title": "Fisher KPP with Julia",
+    "section": "Model definition",
+    "text": "Model definition\nMethodsOfLines.jl makes use of ModelingToolkit.jl to symbolically define the model to integrate.\nLet us first define the time and space parameters:\n\n@parameters t, x\n\nNow the variable u(t,x):\n\n@variables u(..)\n\nAnd finally the derivatives:\n\nDt = Differential(t)\nDx = Differential(x)\nDxx = Differential(x)^2\n\nWe also define the parameters r and D as global variables (not the best design, can be improved).\n\nr = 1.0\nD = 1.0\n\nWe can now define the model symbolically through:\n\neq = Dt(u(t, x)) ~ r * u(t,x) * (1-u(t,x)) + D * Dxx(u(t,x))\n\n \\begin{equation}\n\\frac{\\mathrm{d}}{\\mathrm{d}t} u\\left( t, x \\right) = \\left( 1 - u\\left( t, x \\right) \\right) u\\left( t, x \\right) + \\frac{\\mathrm{d}}{\\mathrm{d}x} \\frac{\\mathrm{d}}{\\mathrm{d}x} u\\left( t, x \\right)\n\\end{equation}"
+  },
+  {
+    "objectID": "index.html#domains-of-integration",
+    "href": "index.html#domains-of-integration",
+    "title": "Fisher KPP with Julia",
+    "section": "Domains of integration",
+    "text": "Domains of integration\nLet us introduce some parameters for space and time domains:\n\nx_max = 30.0\nt_max = 14.0\n\nAnd the domains of integration:\n\ndomain = [x ∈ Interval(0.0, x_max),\n          t ∈ Interval(0.0, t_max)]\n\nWe also introduce (initial and) boundary conditions:\n\nic_bc = [u(0.0, x) ~ 0.0,\n         u(t, 0.0) ~ 1.0,\n         u(t, x_max) ~ 0.0]"
+  },
+  {
+    "objectID": "index.html#simulation",
+    "href": "index.html#simulation",
+    "title": "Fisher KPP with Julia",
+    "section": "Simulation",
+    "text": "Simulation\nWe define the model to be integrated as a PDESystem, from the equation eq, the initial and boundary conditions ic_bc, the domains of integration domain, the time and space parameters t and x, and the solution we want to retrieve u(t,x):\n\n@named sys = PDESystem(eq, ic_bc, domain, [t, x], [u(t,x)])\n\nWe set up the discretization of space, through MethodOfLines.jl:\n\ndx = 0.1\ndiscretization = MOLFiniteDifference([x =&gt; dx], t)\n\nAnd we set up the (ODE) problem to be integrated:\n\nprob = discretize(sys, discretization)\n\nAnd we finally integrate it through the OrdinaryDiffEq.jl solver with Tsit5 algorithm.\n\nsol = solve(prob, Tsit5(), saveat = .1)"
+  },
+  {
+    "objectID": "index.html#graphical-representation",
+    "href": "index.html#graphical-representation",
+    "title": "Fisher KPP with Julia",
+    "section": "Graphical representation",
+    "text": "Graphical representation\nWe retrieve the components of the solution for easier manipulation:\n\ngridx = sol[x]\ngridt = sol[t]\nsolu = sol[u(t,x)]\n\nAnd we plot the animation of the solution through time:\n\nanim = @animate for i in eachindex(gridt)\n    plot(gridx, solu[i, :],\n         xlabel = \"position \"*L\"$x$\",\n         ylabel = \"population density \"*L\"$u$\", \n         label = L\"$u(x,t)$\", \n         title = \"t=$(gridt[i])\")\nend\n\ngif(anim, \"fisherKPP.gif\", fps = 10)\n\n\n\n\nAnd that’s it !"
   }
 ]
