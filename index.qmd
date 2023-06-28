@@ -32,8 +32,15 @@ using MethodOfLines,
 Let us first define the time and space parameters:
 
 ```{julia}
-@parameters t, x
+@parameters t x
 ```
+
+The model parameters:
+
+```{julia}
+@parameters r D
+```
+
 
 Now the variable $u(t,x)$:
 
@@ -41,19 +48,13 @@ Now the variable $u(t,x)$:
 @variables u(..)
 ```
 
+
 And finally the derivatives:
 
 ```{julia}
 Dt = Differential(t)
 Dx = Differential(x)
 Dxx = Differential(x)^2
-```
-
-We also define the parameters $r$ and $D$ as global variables (not the best design, can be improved).
-
-```{julia}
-r = 1.0
-D = 1.0
 ```
 
 We can now define the model symbolically through:
@@ -88,7 +89,7 @@ ic_bc = [u(0.0, x) ~ 0.0,
 We define the model to be integrated as a `PDESystem`, from the equation `eq`, the initial and boundary conditions `ic_bc`, the domains of integration `domain`, the time and space parameters `t` and `x`, and the solution we want to retrieve `u(t,x)`:
 
 ```{julia}
-@named sys = PDESystem(eq, ic_bc, domain, [t, x], [u(t,x)])
+@named sys = PDESystem(eq, ic_bc, domain, [t, x], [u(t,x)], [r => 1.0, D => 1.0])
 ```
 
 We set up the discretization of space, through `MethodOfLines.jl`:
