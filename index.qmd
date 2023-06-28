@@ -86,7 +86,7 @@ ic_bc = [u(0.0, x) ~ 0.0,
 
 ## Simulation
 
-We define the model to be integrated as a `PDESystem`, from the equation `eq`, the initial and boundary conditions `ic_bc`, the domains of integration `domain`, the time and space parameters `t` and `x`, and the solution we want to retrieve `u(t,x)`:
+We define the model to be integrated as a `PDESystem`, from the equation `eq`, the initial and boundary conditions `ic_bc`, the domains of integration `domain`, the time and space parameters `t` and `x`, the solution we want to retrieve `u(t,x)`, and the model parameters $r$ and $D$:
 
 ```{julia}
 @named sys = PDESystem(eq, ic_bc, domain, [t, x], [u(t,x)], [r => 1.0, D => 1.0])
