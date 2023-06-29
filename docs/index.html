@@ -212,7 +212,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="packages" class="level2">
 <h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <p>Let us first import the packages used for the simulation:</p>
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">MethodOfLines</span>, </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>      <span class="bu">ModelingToolkit</span>,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>      <span class="bu">DomainSets</span>, </span>
@@ -225,25 +225,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="model-definition">Model definition</h2>
 <p><code>MethodsOfLines.jl</code> makes use of <code>ModelingToolkit.jl</code> to symbolically define the model to integrate.</p>
 <p>Let us first define the time and space parameters:</p>
-<div class="cell" data-execution_count="2">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@parameters</span> t x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The model parameters:</p>
-<div class="cell" data-execution_count="3">
+<div class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@parameters</span> r D</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now the variable <span class="math inline">u(t,x)</span>:</p>
-<div class="cell" data-execution_count="4">
+<div class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@variables</span> <span class="fu">u</span>(<span class="op">..</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>And finally the derivatives:</p>
-<div class="cell" data-execution_count="5">
+<div class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Dt <span class="op">=</span> <span class="fu">Differential</span>(t)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Dx <span class="op">=</span> <span class="fu">Differential</span>(x)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Dxx <span class="op">=</span> <span class="fu">Differential</span>(x)<span class="op">^</span><span class="fl">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now define the model symbolically through:</p>
-<div class="cell" data-execution_count="6">
+<div class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>eq <span class="op">=</span> <span class="fu">Dt</span>(<span class="fu">u</span>(t, x)) <span class="op">~</span> r <span class="op">*</span> <span class="fu">u</span>(t,x) <span class="op">*</span> (<span class="fl">1</span><span class="fu">-u</span>(t,x)) <span class="op">+</span> D <span class="op">*</span> <span class="fu">Dxx</span>(<span class="fu">u</span>(t,x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="24">
 <p><span class="math display"> \begin{equation}
@@ -256,17 +256,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="domains-of-integration" class="level2">
 <h2 class="anchored" data-anchor-id="domains-of-integration">Domains of integration</h2>
 <p>Let us introduce some parameters for space and time domains:</p>
-<div class="cell" data-execution_count="7">
+<div class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>x_max <span class="op">=</span> <span class="fl">30.0</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>t_max <span class="op">=</span> <span class="fl">14.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>And the domains of integration:</p>
-<div class="cell" data-execution_count="8">
+<div class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>domain <span class="op">=</span> [x <span class="op">∈</span> <span class="fu">Interval</span>(<span class="fl">0.0</span>, x_max),</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>          t <span class="op">∈</span> <span class="fu">Interval</span>(<span class="fl">0.0</span>, t_max)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We also introduce (initial and) boundary conditions:</p>
-<div class="cell" data-execution_count="9">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ic_bc <span class="op">=</span> [<span class="fu">u</span>(<span class="fl">0.0</span>, x) <span class="op">~</span> <span class="fl">0.0</span>,</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>         <span class="fu">u</span>(t, <span class="fl">0.0</span>) <span class="op">~</span> <span class="fl">1.0</span>,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">u</span>(t, x_max) <span class="op">~</span> <span class="fl">0.0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -274,34 +274,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="simulation" class="level2">
 <h2 class="anchored" data-anchor-id="simulation">Simulation</h2>
-<p>We define the model to be integrated as a <code>PDESystem</code>, from the equation <code>eq</code>, the initial and boundary conditions <code>ic_bc</code>, the domains of integration <code>domain</code>, the time and space parameters <code>t</code> and <code>x</code>, and the solution we want to retrieve <code>u(t,x)</code>:</p>
-<div class="cell" data-execution_count="10">
+<p>We define the model to be integrated as a <code>PDESystem</code>, from the equation <code>eq</code>, the initial and boundary conditions <code>ic_bc</code>, the domains of integration <code>domain</code>, the time and space parameters <code>t</code> and <code>x</code>, the solution we want to retrieve <code>u(t,x)</code>, and the model parameters <span class="math inline">r</span> and <span class="math inline">D</span>:</p>
+<div class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@named</span> sys <span class="op">=</span> <span class="fu">PDESystem</span>(eq, ic_bc, domain, [t, x], [<span class="fu">u</span>(t,x)], [r <span class="op">=&gt;</span> <span class="fl">1.0</span>, D <span class="op">=&gt;</span> <span class="fl">1.0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We set up the discretization of space, through <code>MethodOfLines.jl</code>:</p>
-<div class="cell" data-execution_count="11">
+<div class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dx <span class="op">=</span> <span class="fl">0.1</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>discretization <span class="op">=</span> <span class="fu">MOLFiniteDifference</span>([x <span class="op">=&gt;</span> dx], t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>And we set up the (ODE) problem to be integrated:</p>
-<div class="cell" data-execution_count="12">
+<div class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>prob <span class="op">=</span> <span class="fu">discretize</span>(sys, discretization)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>And we finally integrate it through the <code>OrdinaryDiffEq.jl</code> solver with <code>Tsit5</code> algorithm.</p>
-<div class="cell" data-execution_count="13">
+<div class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sol <span class="op">=</span> <span class="fu">solve</span>(prob, <span class="fu">Tsit5</span>(), saveat <span class="op">=</span> <span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="graphical-representation" class="level2">
 <h2 class="anchored" data-anchor-id="graphical-representation">Graphical representation</h2>
 <p>We retrieve the components of the solution for easier manipulation:</p>
-<div class="cell" data-execution_count="14">
+<div class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>gridx <span class="op">=</span> sol[x]</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>gridt <span class="op">=</span> sol[t]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>solu <span class="op">=</span> sol[<span class="fu">u</span>(t,x)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>And we plot the animation of the solution through time:</p>
-<div class="cell" data-execution_count="15">
+<div class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>anim <span class="op">=</span> <span class="pp">@animate</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="fu">eachindex</span>(gridt)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(gridx, solu[i, <span class="op">:</span>],</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>         xlabel <span class="op">=</span> <span class="st">"position "</span><span class="op">*</span>L<span class="st">"</span><span class="sc">$</span>x<span class="sc">$</span><span class="st">",</span></span>
@@ -695,7 +695,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb16-104"><a href="#cb16-104" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-105"><a href="#cb16-105" aria-hidden="true" tabindex="-1"></a><span class="fu">## Simulation</span></span>
 <span id="cb16-106"><a href="#cb16-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-107"><a href="#cb16-107" aria-hidden="true" tabindex="-1"></a>We define the model to be integrated as a <span class="in">`PDESystem`</span>, from the equation <span class="in">`eq`</span>, the initial and boundary conditions <span class="in">`ic_bc`</span>, the domains of integration <span class="in">`domain`</span>, the time and space parameters <span class="in">`t`</span> and <span class="in">`x`</span>, and the solution we want to retrieve <span class="in">`u(t,x)`</span>:</span>
+<span id="cb16-107"><a href="#cb16-107" aria-hidden="true" tabindex="-1"></a>We define the model to be integrated as a <span class="in">`PDESystem`</span>, from the equation <span class="in">`eq`</span>, the initial and boundary conditions <span class="in">`ic_bc`</span>, the domains of integration <span class="in">`domain`</span>, the time and space parameters <span class="in">`t`</span> and <span class="in">`x`</span>, the solution we want to retrieve <span class="in">`u(t,x)`</span>, and the model parameters $r$ and $D$:</span>
 <span id="cb16-108"><a href="#cb16-108" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-111"><a href="#cb16-111" aria-hidden="true" tabindex="-1"></a><span class="in">```{julia}</span></span>
 <span id="cb16-112"><a href="#cb16-112" aria-hidden="true" tabindex="-1"></a><span class="dt">@named</span> sys = PDESystem(<span class="ot">eq</span>, ic_bc, domain, [t, x], [u(t,x)], [r =&gt; <span class="fl">1.0</span>, D =&gt; <span class="fl">1.0</span>])</span>
