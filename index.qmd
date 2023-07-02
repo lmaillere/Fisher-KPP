@@ -25,7 +25,7 @@ using MethodOfLines,
       LaTeXStrings
 ```
 
-## Model definition
+## Model definition 
 
 `MethodsOfLines.jl` makes use of `ModelingToolkit.jl` to symbolically define the model to integrate. 
 
